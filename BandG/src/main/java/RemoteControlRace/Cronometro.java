@@ -8,13 +8,13 @@ import java.util.Vector;
 public class Cronometro extends WindowAdapter implements AtualizadorTela {
     private Frame window;
     private Panel countdown,buttons,teamTime;
-    private TextField txtMin, txtSeg, txtMil,teamOneMemberOne,teamOneMemberTwo,teamOneMemberThree,teamTwoMemberOne,teamTwoMemberTwo,teamTwoMemberThree;
-    private Label teamOne,teamTwo,teamMembersOne,teamMembersTwo,teamMembersThree;
+    private TextField txtMin, txtSeg, txtMil,tTeamOne,tTeamTwo,tTeamOneMemberOne,tTeamOneMemberTwo,tTeamOneMemberThree,tTeamTwoMemberOne,tTeamTwoMemberTwo,tTeamTwoMemberThree;
+    private Label lTeamOne,lTeamTwo,lTeamOneMemberOne,lTeamOneMemberTwo,lTeamOneMemberThree,lTeamTwoMemberOne,lTeamTwoMemberTwo,lTeamTwoMemberThree;
     private Button btnIniciar, btnVolta, btnPara, btnReset, btnEquipe1, btnEquipe2;
     private List listaVoltasEquipe1, listaVoltasEquipe2;
     
     private Temporizador timer, temporizadorEquipe1, temporizadorEquipe2;
-    private int ultimaVoltaEquipe1 = 0, ultimaVoltaEquipe2 = 0;
+    //private int ultimaVoltaEquipe1 = 0, ultimaVoltaEquipe2 = 0;
     private int[] teamLastLap = {0,0}, lastTeamMin = {0,0}, lastTeamSeg = {0,0}, lastTeamMil = {0,0}; 
     private int lastMin=0, lastSeg=0, lastMil=0;
     private ArrayList<String> temposEquipe1 = new ArrayList<>();
@@ -27,7 +27,7 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
         window = new Frame();
         window.setLayout(null);
         window.setTitle("Cronômetro AWT");
-        window.setSize(400, 400);
+        window.setSize(400, 450);
         window.setVisible(true);
 
         // Campos para tempo
@@ -86,18 +86,70 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
         buttons.add(btnEquipe1);
         buttons.add(btnEquipe2);
 
-        // Listas de voltas
+        // Listas de voltas e cadastro de equipes
         teamTime = new Panel();
         teamTime.setLayout(null);
-        teamTime.setBackground(new Color(120,120,120));
+        teamTime.setBackground(new Color(220,220,220));
         teamTime.setLocation(10, 150);
-        teamTime.setSize(380, 245);
+        teamTime.setSize(380, 275);
+        
+        lTeamOne = new Label("Equipe 1");
+        lTeamTwo = new Label("Equipe 2");
+        lTeamOneMemberOne = new Label("Membro 1");
+        lTeamOneMemberTwo = new Label("Membro 2");
+        lTeamOneMemberThree = new Label("Membro 3");
+        lTeamTwoMemberOne = new Label("Membro 1");
+        lTeamTwoMemberTwo = new Label("Membro 2");
+        lTeamTwoMemberThree = new Label("Membro 3");
+        
+        tTeamOne = new TextField(30);
+        tTeamTwo = new TextField(30);
+        tTeamOneMemberOne = new TextField(30);
+        tTeamOneMemberTwo = new TextField(30);
+        tTeamOneMemberThree = new TextField(30);
+        tTeamTwoMemberOne = new TextField(30);
+        tTeamTwoMemberTwo = new TextField(30);
+        tTeamTwoMemberThree = new TextField(30);
+        
+        lTeamOne.setBounds(0,0,200,13);
+        tTeamOne.setBounds(10,13,200,19);
+        lTeamOneMemberOne.setBounds(15,32,200,13);
+        tTeamOneMemberOne.setBounds(25,45,200,19);
+        lTeamOneMemberTwo.setBounds(15,64,200,13);
+        tTeamOneMemberTwo.setBounds(25,77,200,19);
+        lTeamOneMemberThree.setBounds(15,96,200,13);
+        tTeamOneMemberThree.setBounds(25,109,200,19);
+        lTeamTwo.setBounds(0,128,200,13);
+        tTeamTwo.setBounds(10,141,200,19);
+        lTeamTwoMemberOne.setBounds(15,160,200,13);
+        tTeamTwoMemberOne.setBounds(25,173,200,19);
+        lTeamTwoMemberTwo.setBounds(15,192,200,13);
+        tTeamTwoMemberTwo.setBounds(25,205,200,19);
+        lTeamTwoMemberThree.setBounds(15,224,200,13);
+        tTeamTwoMemberThree.setBounds(25,237,200,19);
+        
+        teamTime.add(lTeamOne);
+        teamTime.add(tTeamOne);
+        teamTime.add(lTeamTwo);
+        teamTime.add(tTeamTwo);
+        teamTime.add(lTeamOneMemberOne);
+        teamTime.add(tTeamOneMemberOne);
+        teamTime.add(lTeamOneMemberTwo);
+        teamTime.add(tTeamOneMemberTwo);
+        teamTime.add(lTeamOneMemberThree);
+        teamTime.add(tTeamOneMemberThree);
+        teamTime.add(lTeamTwoMemberOne);
+        teamTime.add(tTeamTwoMemberOne);
+        teamTime.add(lTeamTwoMemberTwo);
+        teamTime.add(tTeamTwoMemberTwo);
+        teamTime.add(lTeamTwoMemberThree);
+        teamTime.add(tTeamTwoMemberThree);
         
         listaVoltasEquipe1 = new List(10);
         listaVoltasEquipe2 = new List(10);
         
-        listaVoltasEquipe1.setBounds(190,0,175,120);
-        listaVoltasEquipe2.setBounds(190,125,175,120);
+        listaVoltasEquipe1.setBounds(245,13,128,120);
+        listaVoltasEquipe2.setBounds(245,141,130,120);
 
         teamTime.add(listaVoltasEquipe1);
         teamTime.add(listaVoltasEquipe2);
@@ -115,7 +167,6 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
                 System.exit(0);
             }
         });
-        
         window.add(countdown);
         window.add(buttons);
         window.add(teamTime);
@@ -153,10 +204,16 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
         txtMil.setText("0");
         listaVoltasEquipe1.removeAll();
         listaVoltasEquipe2.removeAll();
+        teamLastLap[0] = 0;
         teamLastLap[1] = 0;
-        teamLastLap[2] = 0;
-        ultimaVoltaEquipe1 = 0;
-        ultimaVoltaEquipe2 = 0;
+        lastTeamMin[0] = 0;
+        lastTeamMin[1] = 0;
+        lastTeamSeg[0] = 0;
+        lastTeamSeg[1] = 0;
+        lastTeamMil[0] = 0;
+        lastTeamMil[1] = 0;
+        //ultimaVoltaEquipe1 = 0;
+        //ultimaVoltaEquipe2 = 0;
         lastMin = 0;
         lastSeg = 0;
         lastMin = 0;
@@ -205,13 +262,11 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
             this.lastTeamMil[i] += mil;
             this.teamLastLap[i]++;
         }
-        
         String volta = min + ":" + seg + ":" + mil;
         
         lastMin += min;
         lastSeg += seg;
         lastMil += mil;
-        
         
         listaVoltasEquipe1.add("Volta " + this.teamLastLap[0] + " - " + volta);
         listaVoltasEquipe2.add("Volta " + this.teamLastLap[1] + " - " + volta);
@@ -262,7 +317,6 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
         // Exibe os tempos no console
         String volta = "Volta " + this.teamLastLap[equipe] + " - " + tempoSalvo;
         //System.out.println("Volta " + this.teamLastLap[equipe] + " - " + tempoSalvo);
-
         
         if (equipe == 0) {
             // Adiciona o tempo à lista de tempos da equipe1
@@ -277,7 +331,6 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
         }
     }
     
-
     @Override
     public void atualizarTempo(int min, int seg, int mil) {
         txtMin.setText(String.valueOf(min));
