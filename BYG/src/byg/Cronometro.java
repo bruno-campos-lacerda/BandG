@@ -201,11 +201,18 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
         window.add(teamTime);
         window.add(teamManager);
         window.add(ranking);
+        
+        btnEquipe1.setEnabled(false);
+        btnEquipe2.setEnabled(false);
+        btnVolta.setEnabled(false);
     }
 
     private void iniciarCronometro() {
         timer.iniciar();
         btnIniciar.setEnabled(false);
+        btnEquipe1.setEnabled(true);
+        btnEquipe2.setEnabled(true);
+        btnVolta.setEnabled(true);
     }
 
     private void volta() {
@@ -216,6 +223,9 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
     private void parar(){
         timer.parar();
         btnIniciar.setEnabled(true);
+        btnEquipe1.setEnabled(false);
+        btnEquipe2.setEnabled(false);
+        btnVolta.setEnabled(false);
     }
 
     private void resetar() {
@@ -236,9 +246,9 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
         listaVoltasEquipe2.removeAll();
         listaRank.removeAll();
         btnIniciar.setEnabled(true);
-        btnVolta.setEnabled(true);
-        btnEquipe1.setEnabled(true);
-        btnEquipe2.setEnabled(true);
+        btnEquipe1.setEnabled(false);
+        btnEquipe2.setEnabled(false);
+        btnVolta.setEnabled(false);
         teamLastLap[0] = 0;
         teamLastLap[1] = 0;
         lastTeamMin[0] = 0;
