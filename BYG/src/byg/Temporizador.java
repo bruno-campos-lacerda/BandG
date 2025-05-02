@@ -3,7 +3,7 @@ package byg;
 public class Temporizador implements Runnable {
     private final AtualizadorTela tela;
     private boolean rodando;
-    //private int tempoTotal;
+    private int tempoTotal;
     private int equipe;
     private int min=0, seg=0, mil=0;
     //private float mil=0;
@@ -30,9 +30,9 @@ public class Temporizador implements Runnable {
         this.min=0;
     }
 
-    /*public int getTempoTotal() {
+    public int getTempoTotal() {
         return tempoTotal;
-    }*/
+    }
     
     public int getMil(){
         return this.mil;
@@ -56,7 +56,7 @@ public class Temporizador implements Runnable {
             this.deltaTime = (timeInterval - oldTimeInterval) / 1000000;
             this.oldTimeInterval = timeInterval;
             
-            //tempoTotal += deltaTime;
+            tempoTotal += deltaTime;
             mil += deltaTime;
             if(mil >= 1000){
                 seg++;

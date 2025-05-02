@@ -8,16 +8,14 @@ import javax.swing.JOptionPane;
 
 public class Cronometro extends WindowAdapter implements AtualizadorTela {
     private Frame window;
-    private Panel countdown,buttons,teamTime,teamManager;
+    private Panel countdown,buttons,teamTime,teamManager, ranking;
     private TextField txtMin, txtSeg, txtMil,tTeamOne,tTeamTwo,tTeamOneMemberOne,tTeamOneMemberTwo,tTeamOneMemberThree,tTeamTwoMemberOne,tTeamTwoMemberTwo,tTeamTwoMemberThree;
     private Label lTeamOne,lTeamTwo,lTeamOneMemberOne,lTeamOneMemberTwo,lTeamOneMemberThree,lTeamTwoMemberOne,lTeamTwoMemberTwo,lTeamTwoMemberThree;
-    private Button btnIniciar, btnVolta, btnPara, btnReset, btnEquipe1, btnEquipe2,btnSignUp,btnLogin,btnUpdate,btnDelet;
-    private List listaVoltasEquipe1, listaVoltasEquipe2;
+    private Button btnIniciar, btnVolta, btnPara, btnReset, btnEquipe1, btnEquipe2,btnSignUp,btnLogin,btnDelet;
+    private List listaVoltasEquipe1, listaVoltasEquipe2, listaRank;
     
-    private Temporizador timer; //temporizadorEquipe1, temporizadorEquipe2
-    //private int ultimaVoltaEquipe1 = 0, ultimaVoltaEquipe2 = 0;
-    private int[] teamLastLap = {0,0}, lastTeamMin = {0,0}, lastTeamSeg = {0,0}, lastTeamMil = {0,0}; 
-    private int lastMin=0, lastSeg=0, lastMil=0;
+    private Temporizador timer;
+    private int[] teamLastLap = {0,0}, lastTeamMin = {0,0}, lastTeamSeg = {0,0}, lastTeamMil = {0,0}, lastTeamTotal = {0,0};
     private ArrayList<String> temposEquipe1 = new ArrayList<>();
     private ArrayList<String> temposEquipe2 = new ArrayList<>();
     private boolean logged = false;
@@ -27,7 +25,7 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
         window.setLayout(null);
         window.setTitle("Cronômetro AWT");
         window.setBackground(new Color(235,235,235));
-        window.setSize(400, 480);
+        window.setSize(570, 480);
         window.setVisible(true);
 
         // Campos para tempo
@@ -54,9 +52,7 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
         // Botões
         buttons = new Panel();
         buttons.setLayout(null);
-        //buttons.setBackground(new Color(80,80,80));
         buttons.setLocation(67, 75);
-        //buttons.setSize(205, 60);
         buttons.setSize(265,70);
         
         btnIniciar = new Button("Iniciar");
@@ -148,13 +144,12 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
         listaVoltasEquipe1 = new List(10);
         listaVoltasEquipe2 = new List(10);
         
-        listaVoltasEquipe1.setBounds(245,13,128,120);
+        listaVoltasEquipe1.setBounds(245,13,130,120);
         listaVoltasEquipe2.setBounds(245,141,130,120);
 
         teamTime.add(listaVoltasEquipe1);
         teamTime.add(listaVoltasEquipe2);
 
-        //39
         //Botoes para gerenciamento de equipes
         teamManager = new Panel();
         teamManager.setLayout(null);
@@ -166,31 +161,38 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
         btnSignUp.addActionListener(e -> CadastrarEquipes());
         btnLogin = new Button("Entrar");
         btnLogin.addActionListener(e -> ChamarEquipes());
-        btnUpdate = new Button("Atualizar");
-        btnUpdate.addActionListener(e -> AtualizarEquipes());
+        //btnUpdate = new Button("Atualizar");
+        //btnUpdate.addActionListener(e -> AtualizarEquipes());
         btnDelet = new Button("Deletar");
         btnDelet.addActionListener(e -> DeletarEquipes());
         
         btnSignUp.setBounds(12,4,85,31);
-        btnLogin.setBounds(109,4,85,31);
-        btnUpdate.setBounds(206,4,85,31);
+        btnLogin.setBounds(157,4,85,31);
+        //btnUpdate.setBounds(206,4,85,31);
         btnDelet.setBounds(303,4,85,31);
         
         teamManager.add(btnSignUp);
         teamManager.add(btnLogin);
-        teamManager.add(btnUpdate);
+        //teamManager.add(btnUpdate);
         teamManager.add(btnDelet);
         
+        //Rank de melhores voltas
+        ranking = new Panel();
+        ranking.setLayout(null);
+        ranking.setBackground(new Color(90,90,90));
+        ranking.setLocation(400, 30);
+        ranking.setSize(160, 440);
+        
+        listaRank = new List(10);
+        listaRank.setBounds(5,5,150,430);
+        
+        ranking.add(listaRank);
+        
         // Inicialização dos temporizadores
-        //temporizadorEquipe1 = new Temporizador(this, 1);
-        //temporizadorEquipe2 = new Temporizador(this, 2);
         timer = new Temporizador(this,0);
 
         window.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
-                //temporizadorEquipe1.parar();
-                //temporizadorEquipe2.parar();
-                //dispose();
                 System.exit(0);
             }
         });
@@ -198,39 +200,25 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
         window.add(buttons);
         window.add(teamTime);
         window.add(teamManager);
-        
-        
-        
-        //String time = getTeamOneTime();
-        //String timeT = getTeamTwoTime();
+        window.add(ranking);
     }
 
     private void iniciarCronometro() {
-        //temporizadorEquipe1.iniciar();
-        //temporizadorEquipe2.iniciar();
         timer.iniciar();
         btnIniciar.setEnabled(false);
     }
 
     private void volta() {
         // Adiciona a volta de cada equipe (calculando o tempo da última volta)
-        //adicionarVolta(1, temporizadorEquipe1);
-        //adicionarVolta(2, temporizadorEquipe2);
         adicionarVolta(timer);
     }
     
     private void parar(){
-        //temporizadorEquipe1.parar();
-        //temporizadorEquipe2.parar();
         timer.parar();
         btnIniciar.setEnabled(true);
     }
 
     private void resetar() {
-        //temporizadorEquipe1.parar();
-        //temporizadorEquipe2.parar();
-        //temporizadorEquipe1.zerar();
-        //temporizadorEquipe2.zerar();
         timer.parar();
         timer.zerar();
         SetTeamOne("");
@@ -246,6 +234,8 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
         txtMil.setText("0");
         listaVoltasEquipe1.removeAll();
         listaVoltasEquipe2.removeAll();
+        listaRank.removeAll();
+        btnIniciar.setEnabled(true);
         btnVolta.setEnabled(true);
         btnEquipe1.setEnabled(true);
         btnEquipe2.setEnabled(true);
@@ -257,107 +247,23 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
         lastTeamSeg[1] = 0;
         lastTeamMil[0] = 0;
         lastTeamMil[1] = 0;
-        //ultimaVoltaEquipe1 = 0;
-        //ultimaVoltaEquipe2 = 0;
-        lastMin = 0;
-        lastSeg = 0;
-        lastMin = 0;
+        lastTeamTotal[0] = 0;
+        lastTeamTotal[1] = 0;
         temposEquipe1.clear();
         temposEquipe2.clear();
     }
-
-    /*private void adicionarVolta(int equipe, Temporizador temporizador) {
-        int tempoAtual = temporizador.getTempoTotal();
-        int ultimaVolta = equipe == 1 ? ultimaVoltaEquipe1 : ultimaVoltaEquipe2;
-        int duracao = tempoAtual - ultimaVolta;
-        
-        if (equipe == 1) {
-            ultimaVoltaEquipe1 = tempoAtual;
-        } else {
-            ultimaVoltaEquipe2 = tempoAtual;
-        }
-
-        // Calcula tempo em minutos, segundos e milissegundos
-        int min = duracao / 60000;
-        int seg = (duracao % 60000) / 1000;
-        int mil = duracao % 1000;
-
-        // Registra na lista da equipe correspondente
-        String volta = "Volta " + (equipe == 1 ? listaVoltasEquipe1.getItemCount() + 1 : listaVoltasEquipe2.getItemCount() + 1) + " - " + min + ":" + seg + ":" + mil;
-        if (equipe == 1) {
-            listaVoltasEquipe1.add(volta);
-        } else {
-            listaVoltasEquipe2.add(volta);
-        }
-
-        // Salva no ArrayList de tempos
-        if (equipe == 1) {
-            temposEquipe1.add(volta);
-        } else {
-            temposEquipe2.add(volta);
-        }
-    }*/
+    
     private void adicionarVolta(Temporizador temporizador) {
-        int min = temporizador.getMin() - lastMin;
-        int seg = temporizador.getSeg() - lastSeg;
-        int mil = temporizador.getMil() - lastMil;
-        for(int i = 0; i < 2; i++){
-            this.lastTeamMin[i] += min;
-            this.lastTeamSeg[i] += seg;
-            this.lastTeamMil[i] += mil;
-            this.teamLastLap[i]++;
-            if(teamLastLap[i] >= 2){
-                btnVolta.setEnabled(false);
-                if(i == 0){
-                    btnEquipe1.setEnabled(false);
-                }else{
-                    btnEquipe2.setEnabled(false);
-                }
-            }
-        }
-        String volta = min + ":" + seg + ":" + mil;
-        
-        lastMin += min;
-        lastSeg += seg;
-        lastMil += mil;
-        
-        listaVoltasEquipe1.add("Volta " + this.teamLastLap[0] + " - " + volta);
-        listaVoltasEquipe2.add("Volta " + this.teamLastLap[1] + " - " + volta);
-        temposEquipe1.add("Volta " + this.teamLastLap[0] + " - " + volta);
-        temposEquipe2.add("Volta " + this.teamLastLap[1] + " - " + volta);
+        salvarTempoEquipe(0,timer);
+        salvarTempoEquipe(1,timer);
     }
-
-    /*private void salvarTempoEquipe(int equipe) {
-        // Salva e exibe o tempo da equipe no momento em que o botão é pressionado
-        int tempoAtual = (equipe == 1) ? temporizadorEquipe1.getTempoTotal() : temporizadorEquipe2.getTempoTotal();
-        int min = tempoAtual / 60000;
-        int seg = (tempoAtual % 60000) / 1000;
-        int mil = tempoAtual % 1000;
-        String tempoSalvo = min + ":" + seg + ":" + mil;
-
-        // Exibe os tempos no console
-        System.out.println("Tempo da Equipe " + equipe + ": " + tempoSalvo);
-
-        // Adiciona o tempo à lista de tempos da equipe
-        if (equipe == 1) {
-            temposEquipe1.add(tempoSalvo);
-        } else {
-            temposEquipe2.add(tempoSalvo);
-        }
-
-        // Exibe o tempo da equipe na lista de voltas
-        if (equipe == 1) {
-            listaVoltasEquipe1.add("Equipe 1 - Tempo: " + tempoSalvo);
-        } else {
-            listaVoltasEquipe2.add("Equipe 2 - Tempo: " + tempoSalvo);
-        }
-    }*/
+    
     private void salvarTempoEquipe(int equipe, Temporizador temporizador) {
         // Salva e exibe o tempo da equipe no momento em que o botão é pressionado
-        //int tempoAtual = (equipe == 1) ? temporizadorEquipe1.getTempoTotal() : temporizadorEquipe2.getTempoTotal();
         int min = temporizador.getMin() - lastTeamMin[equipe];
         int seg = temporizador.getSeg() - lastTeamSeg[equipe];
         int mil = temporizador.getMil() - lastTeamMil[equipe];
+        int tot;
         String tempoSalvo = min + ":" + seg + ":" + mil;
         
         //Reseta o tempo da volta
@@ -369,7 +275,6 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
 
         // Exibe os tempos no console
         String volta = "Volta " + this.teamLastLap[equipe] + " - " + tempoSalvo;
-        //System.out.println("Volta " + this.teamLastLap[equipe] + " - " + tempoSalvo);
         
         if (equipe == 0) {
             // Adiciona o tempo à lista de tempos da equipe1
@@ -377,6 +282,7 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
             // Exibe o tempo da equipe1 na lista de voltas
             listaVoltasEquipe1.add(volta);
             if(teamLastLap[0] >= 2){
+                tot = temporizador.getTempoTotal();
                 btnEquipe1.setEnabled(false);
                 btnVolta.setEnabled(false);
             }
@@ -386,9 +292,15 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
             // Exibe o tempo da equipe2 na lista de voltas
             listaVoltasEquipe2.add(volta);
             if(teamLastLap[1] >= 2){
+                tot = temporizador.getTempoTotal();
                 btnEquipe2.setEnabled(false);
                 btnVolta.setEnabled(false);
             }
+        }
+        if(!this.btnEquipe1.isEnabled() && !this.btnEquipe2.isEnabled()){
+            timer.parar();
+            AtualizarEquipes();
+            //btnUpdate.setEnabled(false);
         }
     }
     
@@ -416,11 +328,8 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
     private void SetTeamTwoMemberThree(String name){
         tTeamTwoMemberThree.setText(name);
     }
-    private void ShowTimeOfTeamOne(String time){
-        JOptionPane.showMessageDialog(null, time);
-    }
-    private void ShowTimeOfTeamTwo(String time){
-        JOptionPane.showMessageDialog(null, time);
+    private void setRank(String rank){
+        listaRank.add(rank);
     }
     private String getTeamOne(){
         return this.tTeamOne.getText();
@@ -448,8 +357,8 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
     }
     private String getTeamOneTime(){
         String time = "";
-        for(int i = 0; i < this.temposEquipe2.size(); i++){
-            time += this.temposEquipe2.get(i) + "\n";
+        for(int i = 0; i < this.temposEquipe1.size(); i++){
+            time += this.temposEquipe1.get(i) + "\n";
         }
         return time;
     }
@@ -460,12 +369,19 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
         }
         return time;
     }
+    private String getTeamOneRank(){
+        return lastTeamMin[0]+":"+lastTeamSeg[0]+":"+lastTeamMil[0];
+    }
+    private String getTeamTwoRank(){
+        return lastTeamMin[1]+":"+lastTeamSeg[1]+":"+lastTeamMil[1];
+    }
     
     Connection Conecta(){
         //Procedure para insercao: CALL signUp(_TEAM_NAME, _MEMBER_ONE, _MEMBER_TWO, _MEMBER_THREE, _LAP);
         //Procedure para insercao de volta: CALL addLap(_TEAM_NAME, _LAP);
         //Procedure para chamar equipes: CALL call_team(_TEAM_NAME);
         //Procedure para deletar equipe: CALL delete_team(_TEAM_NAME);
+        //PROCEDURE para criar rank: CALL call_laps(_TEAM_ONE, _TEAM_TWO);
 
         //Caminho para o banco de dados
         String url="jdbc:mysql://localhost/byg";
@@ -490,8 +406,8 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
         Connection con = Conecta();
         try{
             Statement st = con.createStatement();
-            st.executeUpdate("CALL signUp('"+getTeamOne()+"','"+getTeamOneMemberOne()+"','"+getTeamOneMemberTwo()+"','"+getTeamOneMemberThree()+"','"+getTeamOneTime()+"');");
-            st.executeUpdate("CALL signUp('"+getTeamTwo()+"','"+getTeamTwoMemberOne()+"','"+getTeamTwoMemberTwo()+"','"+getTeamTwoMemberThree()+"','"+getTeamTwoTime()+"');");
+            st.executeUpdate("CALL signUp('"+getTeamOne()+"','"+getTeamOneMemberOne()+"','"+getTeamOneMemberTwo()+"','"+getTeamOneMemberThree()+"','"+getTeamOneTime()+"','"+getTeamOneRank()+"');");
+            st.executeUpdate("CALL signUp('"+getTeamTwo()+"','"+getTeamTwoMemberOne()+"','"+getTeamTwoMemberTwo()+"','"+getTeamTwoMemberThree()+"','"+getTeamTwoTime()+"','"+getTeamTwoRank()+"');");
             st.close();
             con.close();
         }catch(SQLException e){
@@ -502,66 +418,47 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
         Connection con = Conecta();
         try{
             String equipe1 = getTeamOne();
-            //Statement stOne = con.createStatement();
-            //ResultSet rsOne = stOne.executeQuery("CALL call_team('"+getTeamOne()+"')");
-            CallableStatement stmtOne = con.prepareCall("CALL call_team('"+equipe1+"')");
-            stmtOne.execute();
-            ResultSet rsOne = stmtOne.getResultSet();
+            Statement stOne = con.createStatement();
+            ResultSet rsOne = stOne.executeQuery("CALL call_team('"+equipe1+"','')");
             while(rsOne.next()){
                 this.SetTeamOne(rsOne.getString(1));
                 this.SetTeamOneMemberOne(rsOne.getString(2));
                 this.SetTeamOneMemberTwo(rsOne.getString(3));
                 this.SetTeamOneMemberThree(rsOne.getString(4));
-                //this.ShowTimeOfTeamOne(rsOne.getString(6));
             }
-            stmtOne.getMoreResults();
-            rsOne = stmtOne.getResultSet();
-            String timeOne = "";
-            while(rsOne.next()){
-                timeOne += rsOne.getString(2)+"\n";
-                //this.ShowTimeOfTeamOne(rsOne.getString(2));
-            }
-            this.ShowTimeOfTeamOne(timeOne);
             rsOne.close();
-            //stOne.close();
-            stmtOne.close();
             
+            equipe1 = getTeamOne();
             String equipe2 = getTeamTwo();
-            //Statement stTwo = con.createStatement();
-            //ResultSet rsTwo = stTwo.executeQuery("CALL call_team('"+getTeamTwo()+"')");
-            CallableStatement stmtTwo = con.prepareCall("CALL call_team('"+equipe2+"')");
-            stmtTwo.execute();
-            ResultSet rsTwo = stmtTwo.getResultSet();
+            Statement stTwo = con.createStatement();
+            ResultSet rsTwo = stTwo.executeQuery("CALL call_team('"+equipe2+"','"+equipe1+"')");
             while(rsTwo.next()){
                 this.SetTeamTwo(rsTwo.getString(1));
                 this.SetTeamTwoMemberOne(rsTwo.getString(2));
                 this.SetTeamTwoMemberTwo(rsTwo.getString(3));
                 this.SetTeamTwoMemberThree(rsTwo.getString(4));
             }
-            stmtTwo.getMoreResults();
-            rsTwo = stmtTwo.getResultSet();
-            String timeTwo = "";
-            while(rsTwo.next()){
-                timeTwo += rsTwo.getString(2)+"\n";
-                //this.ShowTimeOfTeamTwo(rsTwo.getString(2));
-            }
-            this.ShowTimeOfTeamTwo(timeTwo);
             rsTwo.close();
-            //stTwo.close();
-            stmtTwo.close();
+            
+            equipe2 = getTeamTwo();
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery("CALL call_laps('"+equipe1+"','"+equipe2+"')");
+            while(rs.next()){
+                String rank = rs.getString(1)+" - "+rs.getString(2);
+                this.setRank(rank);
+            }
+            st.close();
             con.close();
         }catch(SQLException e){
             JOptionPane.showMessageDialog(null, "Não foi encontrada a equipe\n"+e);
         }
-        
-        
     }
     private void AtualizarEquipes(){
         Connection con = Conecta();
         try{
             Statement st = con.createStatement();
-            st.executeUpdate("CALL addLap('"+getTeamOne()+"','"+getTeamOneTime()+"');");
-            st.executeUpdate("CALL addLap('"+getTeamTwo()+"','"+getTeamTwoTime()+"');");
+            st.executeUpdate("CALL addLap('"+getTeamOne()+"','"+getTeamOneTime()+"','"+getTeamOneRank()+"');");
+            st.executeUpdate("CALL addLap('"+getTeamTwo()+"','"+getTeamTwoTime()+"','"+getTeamTwoRank()+"');");
             st.close();
             con.close();
         }catch(SQLException e){
