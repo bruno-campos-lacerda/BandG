@@ -338,6 +338,9 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
     private void SetTeamTwoMemberThree(String name){
         tTeamTwoMemberThree.setText(name);
     }
+    private void clearRank(){
+        listaRank.removeAll();
+    }
     private void setRank(String rank){
         listaRank.add(rank);
     }
@@ -435,10 +438,10 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
                 this.SetTeamOneMemberOne(rsOne.getString(2));
                 this.SetTeamOneMemberTwo(rsOne.getString(3));
                 this.SetTeamOneMemberThree(rsOne.getString(4));
+                equipe1 = getTeamOne();
             }
             rsOne.close();
             
-            equipe1 = getTeamOne();
             String equipe2 = getTeamTwo();
             Statement stTwo = con.createStatement();
             ResultSet rsTwo = stTwo.executeQuery("CALL call_team('"+equipe2+"','"+equipe1+"')");
@@ -447,12 +450,13 @@ public class Cronometro extends WindowAdapter implements AtualizadorTela {
                 this.SetTeamTwoMemberOne(rsTwo.getString(2));
                 this.SetTeamTwoMemberTwo(rsTwo.getString(3));
                 this.SetTeamTwoMemberThree(rsTwo.getString(4));
+                equipe2 = getTeamTwo();
             }
             rsTwo.close();
-            
-            equipe2 = getTeamTwo();
+
             Statement st = con.createStatement();
             ResultSet rs = st.executeQuery("CALL call_laps('"+equipe1+"','"+equipe2+"')");
+            this.clearRank();
             while(rs.next()){
                 String rank = rs.getString(1)+" - "+rs.getString(2);
                 this.setRank(rank);

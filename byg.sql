@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 04, 2025 at 05:39 PM
+-- Generation Time: May 04, 2025 at 06:40 PM
 -- Server version: 10.1.38-MariaDB
 -- PHP Version: 7.3.2
 
@@ -45,13 +45,21 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `call_team` (IN `_TEAM_NAME` VARCHAR
     		SELECT * FROM team;
     	ELSE
             SELECT * FROM team WHERE team_name NOT LIKE _FIRST_TEAM;
-    		SELECT team_name,lap FROM laps WHERE team_name NOT LIKE _FIRST_TEAM;
+    		/*SELECT team_name,lap FROM laps WHERE team_name NOT LIKE _FIRST_TEAM;*/
         END IF;
     ELSE
-		/*SELECT * FROM team WHERE team_name = _TEAM_NAME;*/
-        SELECT * FROM team WHERE team_name LIKE CONCAT('%',_TEAM_NAME,'%');
-		/*SELECT team_name,lap FROM laps WHERE team_name = _TEAM_NAME;*/
-        SELECT team_name,lap FROM laps WHERE team_name LIKE CONCAT('%',_TEAM_NAME,'%');
+    	IF(_FIRST_TEAM = '')THEN
+        	/*SELECT * FROM team WHERE team_name = _TEAM_NAME;*/
+        	SELECT * FROM team WHERE team_name LIKE CONCAT('%',_TEAM_NAME,'%');
+			/*SELECT team_name,lap FROM laps WHERE team_name = _TEAM_NAME;*/
+        	SELECT team_name,lap FROM laps WHERE team_name LIKE CONCAT('%',_TEAM_NAME,'%');
+    	ELSEIF(_TEAM_NAME NOT LIKE CONCAT('%',_FIRST_TEAM,'%'))THEN
+        	SELECT * FROM team WHERE team_name LIKE CONCAT('%',_TEAM_NAME,'%');
+        	SELECT team_name,lap FROM laps WHERE team_name LIKE CONCAT('%',_TEAM_NAME,'%');
+        ELSE
+        	SELECT * FROM team WHERE team_name NOT LIKE _FIRST_TEAM;
+            SELECT team_name,lap FROM laps WHERE team_name NOT LIKE _FIRST_TEAM;
+        END IF;
     END IF;	
 END$$
 
@@ -91,12 +99,8 @@ CREATE TABLE `laps` (
 
 INSERT INTO `laps` (`team_name`, `lap`, `total_time`) VALUES
 ('BYG', 'Volta 1 - 0:3:186\nVolta 2 - 0:3:-126\n', '0:5:1050'),
-('SlashSnake', 'Volta 1 - 0:1:758\nVolta 2 - 0:3:-126\n', '0:7:506'),
-('SlashSnake', 'Volta 1 - 0:6:156\nVolta 2 - 0:0:724\n', '0:6:880'),
 ('BYG', 'Volta 1 - 0:3:246\nVolta 2 - 0:1:246\n', '0:4:492'),
-('SlashSnake', 'Volta 1 - 0:1:558\nVolta 2 - 0:0:264\n', '0:1:822'),
 ('BYG', 'Volta 1 - 0:2:760\nVolta 2 - 0:1:-666\n', '0:3:94'),
-('SlashSnake', 'Volta 1 - 0:3:138\nVolta 2 - 0:2:128\n', '0:5:266'),
 ('BYG', 'Volta 1 - 0:2:156\nVolta 2 - 0:3:110\n', '0:5:266');
 
 -- --------------------------------------------------------
