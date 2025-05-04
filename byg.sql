@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 02, 2025 at 04:40 AM
+-- Generation Time: May 04, 2025 at 05:39 PM
 -- Server version: 10.1.38-MariaDB
 -- PHP Version: 7.3.2
 
@@ -27,7 +27,9 @@ DELIMITER $$
 -- Procedures
 --
 CREATE DEFINER=`root`@`localhost` PROCEDURE `addLap` (IN `_TEAM_NAME` VARCHAR(30), IN `_LAP` VARCHAR(45), IN `_RANK` VARCHAR(45))  BEGIN
-	INSERT INTO laps(team_name,lap,total_time) VALUES(_TEAM_NAME,_LAP,_RANK);
+	IF(_TEAM_NAME NOT LIKE '')THEN
+		INSERT INTO laps(team_name,lap,total_time) VALUES(_TEAM_NAME,_LAP,_RANK);
+    END IF;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `call_laps` (IN `_TEAM_ONE` VARCHAR(30), IN `_TEAM_TWO` VARCHAR(30))  BEGIN
@@ -46,8 +48,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `call_team` (IN `_TEAM_NAME` VARCHAR
     		SELECT team_name,lap FROM laps WHERE team_name NOT LIKE _FIRST_TEAM;
         END IF;
     ELSE
-		SELECT * FROM team WHERE team_name = _TEAM_NAME;
-		SELECT team_name,lap FROM laps WHERE team_name = _TEAM_NAME;
+		/*SELECT * FROM team WHERE team_name = _TEAM_NAME;*/
+        SELECT * FROM team WHERE team_name LIKE CONCAT('%',_TEAM_NAME,'%');
+		/*SELECT team_name,lap FROM laps WHERE team_name = _TEAM_NAME;*/
+        SELECT team_name,lap FROM laps WHERE team_name LIKE CONCAT('%',_TEAM_NAME,'%');
     END IF;	
 END$$
 
@@ -57,11 +61,13 @@ DELETE FROM team WHERE team_name=_TEAM_NAME;
 END$$
 
 CREATE DEFINER=`root`@`localhost` PROCEDURE `signUp` (IN `_TEAM_NAME` VARCHAR(30), IN `_MEMBER_ONE` VARCHAR(30), IN `_MEMBER_TWO` VARCHAR(30), IN `_MEMBER_THREE` VARCHAR(30), IN `_LAP` VARCHAR(45), IN `_RANK` VARCHAR(45))  BEGIN
-IF(_LAP = '') THEN
-	INSERT INTO team VALUES(_TEAM_NAME,_MEMBER_ONE,_MEMBER_TWO,_MEMBER_THREE);
-ELSE
-	INSERT INTO team VALUES(_TEAM_NAME,_MEMBER_ONE,_MEMBER_TWO,_MEMBER_THREE);
-    INSERT INTO laps (team_name,lap,total_time) VALUES(_TEAM_NAME,_LAP,_RANK);
+IF(_TEAM_NAME NOT LIKE '')THEN
+	IF(_LAP = '') THEN
+		INSERT INTO team VALUES(_TEAM_NAME,_MEMBER_ONE,_MEMBER_TWO,_MEMBER_THREE);
+	ELSE
+		INSERT INTO team VALUES(_TEAM_NAME,_MEMBER_ONE,_MEMBER_TWO,_MEMBER_THREE);
+    	INSERT INTO laps (team_name,lap,total_time) VALUES(_TEAM_NAME,_LAP,_RANK);
+	END IF;
 END IF;
 END$$
 
